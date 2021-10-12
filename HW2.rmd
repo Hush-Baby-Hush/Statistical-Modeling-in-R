@@ -1,0 +1,171 @@
+---
+title: "STAT 425 Assignment 2"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Name: Kimmy Liu
+### Netid: zl32
+
+Submit your computational work both as an R markdown (*.Rmd) document and as a pdf, along with any files needed to run the code. Embed your answers to each problem in the document below after the question statement. If you have hand-written work, please scan or take pictures of it and include in a pdf file, ideally combined with your pdf output file from R Markdown.
+
+## Problem 3
+We aim to minimize the function 
+$$
+f(\beta)=\sum_{i=1}^{n}\left[y_{i}-\beta x_{i}\right]^{2}
+$$
+Take the first order derivative of $f(\beta)$, we get
+$$
+\begin{aligned}
+f^{\prime}(\beta)&=\sum_{i=1}^{n} 2\left(y_{i}-\beta x_{i}\right)\left(-x_{i}\right)\\\
+&=-2 \sum_{i=1}^{n} x_{i} y_{i}+2 \beta \sum_{i=1}^{n} x_{i}^{2}
+\end{aligned}
+$$
+And the second order derivative is 
+$$
+f^{\prime\prime}(\beta)= 2 \sum_{i=1}^{n} x_{i}^{2} \geq 0
+$$
+Which indicates this function is a convex function. We can then find the optimal $\hat{\beta}$ by setting $f^{\prime}(\beta)=0$. Finally we get 
+$$
+\hat{\beta}=\sum_{i=1}^{n} x_{i} y_{i} / \sum_{i=1}^{n} x_{i}^{2}
+$$
+
+## Problem 4
+**a)**
+
+**Answer:**
+$$
+\begin{aligned}
+\hat{\beta}&=\sum_{i=1}^{n} x_{i} y_{i} / \sum_{i=1}^{n} x_{i}^{2}\\
+&=2.5
+\end{aligned}
+$$
+
+**b)**
+
+**Answer:**
+The estimate $\hat{\beta}$ is
+
+```{r}
+x <- c(1,3,4,5,6,7,8)
+y <- c(3,6,12,13,17,16,19)
+fit <- lm(y ~ x+0)
+fit$coef
+```
+Now we create a scatterplot.
+
+```{r}
+plot(x, y, xlim=c(0,8), ylim=c(0,20),
+    main="Scatterplot",
+    xlab="x",
+    ylab="y")
+abline(a=0,b=fit$coeff)
+```
+
+**c)**
+
+**Answer:**
+We have $e=y-\hat{y}=y-\hat{\beta}x$
+```{r}
+e <- y - fit$coeff *x
+res<- data.frame(x=x,y=y,e=e)
+knitr::kable(res,format = "markdown")
+```
+
+And the sumation is 
+```{r}
+sum(e)
+```
+Which is not zero. Since in this model there's no intercept and the vector of all 1’s, e does not have to be orthogonal to it. Thus the sumation does not have to be zero.
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+x <- c(1.4,1.6,1.6,2,2,2.4,2.4,2.6)
+y <- c(201,169,209,185,185,241,201,249)
+fit <- lm(y ~ x)
+summary(fit)
+fit
+```
+
+
+```{r}
+
+
+### (a)
+SXX = sum( (x-mean(x))^2 )
+SXY = sum( (x-mean(x)) * (y-mean(y)) )
+beta1.hat = SXY/SXX
+beta0.hat = mean(y) - beta1.hat * mean(x) 
+e = y - (beta0.hat + beta1.hat * x)
+n = length(y)
+s2_e <- sum(e^2)/(n-2)
+SXX
+SXY
+s2_e
+
+```
+```{r}
+anova(fit)
+```
+
+
+
+
+
+```{r}
+x = c(4,6,6,9,12,4,4,8,9,8)
+y = c(254,330,310,384,398,350,390,442,480,422)
+
+### (a)
+SXX = sum( (x-mean(x))^2 )
+SXY = sum( (x-mean(x)) * (y-mean(y)) )
+beta1.hat = SXY/SXX
+beta0.hat = mean(y) - beta1.hat * mean(x) 
+e = y - (beta0.hat + beta1.hat * x)
+n = length(y)
+s2_e <- sum(e^2)/(n-2)
+beta1.hat
+beta0.hat
+e
+s2_e
+sum(e^2)
+n
+### (b)
+#2 * (1 - pt( abs( beta1.hat/sqrt(s2_e/SXX ) ), n-2 ))
+
+# use R function
+#summary(fit)
+#summary(fit)$coefficients[2, 4]
+
+### (c)
+#1 -  pt( (beta1.hat - 4)/sqrt(s2_e/SXX ), n-2 )
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,272 @@
+---
+title: "STAT 420 Assignment 3"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Name: Kimmy $\text{\underline{Liu}}$
+### Netid: zl32@illinois.edu
+
+## Problem 1
+
+
+**a)** 
+
+**Answer:**
+```{r}
+x <- c(2,2,2,3,2,2,3,4,3,4,3,4,3,4,4,3)
+y <- c(420,570,590,610,660,780,890,930,950,1010,1050,1060,1090,1100,1200,1186)
+SXX = sum((x-mean(x))**2)
+SXY = sum((x-mean(x))*(y-mean(y)))
+SYY = sum((y-mean(y))**2)
+beta_hat1 = SXY/SXX
+beta_hat0 = mean(y) - beta_hat1*mean(x)
+print(beta_hat0)
+print(beta_hat1)
+```
+we can also ues:
+```{r}
+fit <- lm(y~x)
+fit
+```
+
+As a result, y_hat = 197+228x
+
+**b)** 
+
+**Answer:**
+
+```{r}
+y_hat = beta_hat0+beta_hat1*x
+e <- y - y_hat
+res<- data.frame(x=x,y=y,e=e)
+knitr::kable(res,format = "markdown")
+```
+```{r}
+sum(e)
+```
+Yes, the sum of the residuals equal zero. 
+
+**c)** 
+
+**Answer:**
+
+```{r}
+summary(fit)$sigma^2
+```
+**d)** 
+
+**Answer:**
+```{r}
+summary(fit)$r.squared
+```
+about 57.93251% can be explained by a straight-line relationship. 
+**e)** 
+
+**Answer:**
+```{r}
+plot(x, y, main="Scatterplot",
+xlab="bedroom number(x)",
+ylab="monthly rent(y)")
+abline(fit$coefficients)
+```
+
+## Problem 2
+
+
+**a)** 
+
+**Answer:**
+
+use last 4 digits of my UIN:
+
+establish the model:
+```{r}
+x = runif(n = 11, 10, 20)
+beta_0 = 10
+beta_1 = 8
+#667755183
+last4digit = 5183
+set.seed(last4digit) 
+sim_slr = function(x,
+                   beta_0 = 10,
+                   beta_1 = 8,
+                   sigma = 6) {
+  n = length(x)
+  epsilon = rnorm(n, mean = 0, sd = sigma)
+  y = beta_0 + beta_1 * x + epsilon
+  data.frame(predictor = x, response = y)
+}
+set.seed(last4digit)
+sim_data = sim_slr(x,
+                   beta_0 = 10,
+                   beta_1 = 8,
+                   sigma = 6)
+```
+
+simulate this model:
+```{r}
+sim_fit = lm(response ~ predictor, data = sim_data)
+sim_fit$coefficients
+```
+plot:
+```{r}
+plot(
+  response ~ predictor,
+  data = sim_data,
+  xlab = "Simulated Predictor Variable",
+  ylab = "Simulated Response Variable",
+  main = "Simulated Data",
+  pch  = 20,
+  cex  = 2,
+  col  = "navyblue"
+)
+abline(sim_fit,
+       lwd = 2,
+       lty = 1,
+       col = "darkorange",
+       type = "solid")
+abline(beta_0,
+       beta_1,
+       lwd = 1,
+       lty = 2,
+       col = "dodgerblue",
+       type = "dashed")
+legend(
+  "topright",
+  c("Estimate", "Truth"),
+  lty = c(1, 2),
+  lwd = c(2, 1),
+  col = c("darkorange", "dodgerblue")
+)
+```
+
+
+**b)** 
+
+**Answer:**
+```{r}
+
+```
+
+```{r}
+
+plot(
+  x , 10+8*x, type = "n",
+  data = sim_data,
+  xlab = "Simulated Predictor Variable",
+  ylab = "Simulated Response Variable",
+  main = "Simulated Data",
+  pch  = 20,
+  cex  = 2,
+  col  = "navyblue"
+)
+beta_hat_1 = rep(0, 200)
+beta_hat_0 = rep(0, 200)
+for(i in 1:200) {
+  sim_data = sim_slr( x = x, beta_0 = 10, beta_1 = 8, sigma = 6)
+  model = lm(response ~ predictor, data = sim_data)
+  beta_hat_1[i] = coef(model)[2]
+  beta_hat_0[i] = coef(model)[1]
+  abline(beta_hat_0[i],beta_hat_1[i],
+       lwd = 2,
+       lty = 1,
+       col = "darkorange",
+       type = "solid")
+}
+
+abline(beta_0,
+       beta_1,
+       lwd = 3,
+       lty = 2,
+       col = "white",
+       type = "solid")
+
+legend(
+  "topright",
+  c("Estimate", "Truth"),
+  lty = c(1, 2),
+  lwd = c(2, 3),
+  col = c("darkorange", "white")
+)
+```
+
+
+
+
+## Problem 4
+**a)**
+
+**Answer:**
+Using the answer from the problem three, the answer is 2.5
+
+**b)**
+
+**Answer:**
+The estimate value is
+
+```{r}
+x <- c(1,3,4,5,6,7,8)
+y <- c(3,6,12,13,17,16,19)
+fit <- lm(y ~ x+0)
+fit$coef
+```
+Now we create a scatterplot.
+
+```{r}
+plot(x, y, xlim=c(0,8), ylim=c(0,20),
+    main="Scatterplot",
+    xlab="x",
+    ylab="y")
+abline(a=0,b=fit$coeff)
+```
+
+**c)**
+
+**Answer:**
+We have 
+```{r}
+e <- y - fit$coeff *x
+res<- data.frame(x=x,y=y,e=e)
+knitr::kable(res,format = "markdown")
+```
+
+And the sumation is 
+```{r}
+sum(e)
+```
+Which is not zero. Since in this model there's no intercept and the vector of all 1’s, e does not have to be orthogonal to it. Thus the sumation does not have to be zero.
+
+```{r}
+x1 = c(4,6,6,9,12,4,4,8,9,8)
+x2 = c(12,12,12,12,12,18,18,18,18,18)
+
+y = c(254,330,310,384,398,350,390,442,480,422)
+fit = lm(y ~ x1+x2)
+summary(fit)
+
+```
+
+```{r}
+new = data.frame(x1=10, x2=10)
+predict.lm(fit, new, interval = c("confidence"), level = 0.95)
+```
+```{r}
+R2 = 1 - RSS/SYY
+adj=1-(n-1)/(n-p)*(1-R2)
+```
+
+```{r}
+library(faraway)
+?sat
+```
+
+

@@ -1,0 +1,180 @@
+---
+title: "STAT 420 Homework 10"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Name: Kimmy Liu
+### Netid: zl32
+### Section: 4UG
+
+## Problem 1
+```{r}
+library(faraway)
+data(sat)
+head(sat)
+```
+**a)** 
+```{r}
+fit = lm(total~expend+ratio+salary+takers, data = sat)
+```
+
+```{r}
+plot(fit$fitted.values,fit$residuals)
+abline(h=0,lty=2)
+```
+The residuals versus the fitted values plot suggests that the variance for errors may not be
+constant since points in the plot seem to have a curved pattern. 
+
+**b)** 
+```{r}
+qqnorm(resid(fit), col = "blue")
+qqline(resid(fit), col = "orange", lwd = 2)
+```
+Since the points of the plot do not closely follow a straight line, this suggests that the data do not come
+from a normal distribution.
+
+**c)** 
+```{r}
+n = 50
+p = 5
+lev = influence(fit)$hat
+lev[lev>2*p/n]
+```
+```{r}
+halfnorm(lev, 4, labs = row.names(sat), ylab = "Leverages")
+```
+
+From the plot we can see 4 large leverage points corresponding to California, Connecticut, New Jersey and Utah.
+
+**d)** 
+```{r}
+cv=qt(0.05/(2*n),df=df.residual(fit))
+(hlobs <- which(influence(fit)$hat > 2 * p / n))
+```
+```{r}
+which(abs(rstudent(fit)[hlobs]) > abs(cv))
+```
+We can see that none of the observations is rejected as an outlier after Bonferroni adjustment for the sample
+size.
+
+
+**e)** 
+```{r}
+cook = cooks.distance(fit)
+halfnorm(cook, labs = row.names(sat), ylab = "Cook's distance",
+main = "Half-normal plot of Cook's distance")
+```
+```{r}
+max(cook)
+```
+
+According to the rule-of-thumb (CD >= 1), there are not influential observations. However, there is one observation that is too far from the rest which correspond to "Utah"
+
+**f)** 
+```{r}
+summary(fit)
+```
+expend is the least significant variable, p-value = 0.8439. 
+
+```{r}
+fit1 = update(fit, .~. - expend) 
+summary(fit1)
+```
+All variables are significant at 0.10. 
+"Best" model is lm(formula = total ~ ratio + salary + takers, data = sat)
+
+
+**g)** 
+```{r}
+step(fit, direction = "backward")
+```
+"Best" model is lm(formula = total ~ ratio + salary + takers, data = sat)
+
+**h)** 
+```{r}
+attach(sat)
+step(lm(total ~ 1), total ~ expend + ratio + salary + takers, 
+direction = "forward") 
+```
+
+"Best" model is lm(formula = total ~ takers + expend)
+
+**i)** 
+(h) is preferred with lower AIC compared to (g)
+
+
+**j)** 
+(g):
+```{r}
+summary(lm(formula = total ~ ratio + salary + takers, data = sat))
+```
+(h):
+```{r}
+summary(lm(formula = total ~ expend + takers, data = sat))
+```
+(g) is preferred with larger Adjusted R-squared. 
+
+
+## Problem 2
+**c)** 
+```{r}
+n=34
+p.null=3
+p.full=5
+RSS.null=528
+RSS.full=448
+```
+
+```{r}
+aic.null = n*log(RSS.null/n) + 2*p.null
+aic.full = n*log(RSS.full/n) + 2*p.full
+c(aic.null, aic.full)
+```
+Since aic.full<aic.null, full model is preferred. 
+
+
+**d)** 
+```{r}
+bic.null = n*log(RSS.null/n) + log(n)*p.null
+bic.full = n*log(RSS.full/n) + log(n)*p.full
+c(bic.null, bic.full)
+```
+Since bic.null<bic.full, null model is preferred.
+
+**e)** 
+```{r}
+syy=748
+rsq.null=1-RSS.null/syy
+rsq.full=0.40107
+Adjusted.Rsq.null = 1-(1-rsq.null)*(n-1)/(n-p.null-1)
+Adjusted.Rsq.full = 1-(1-rsq.full)*(n-1)/(n-p.full-1)
+c(Adjusted.Rsq.null,Adjusted.Rsq.full)
+```
+Full model is preferred since full model has larger adjusted R-square. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,57 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+Brand1 = c(20, 24, 27, 26, 33)
+Brand2 = c(27, 38, 32, 39, 34)
+Brand3 = c(22, 24, 19, 26, 29)
+plots = c(rep("Brand1", 5),rep("Brand2", 5),rep("Brand3", 5))
+seeds = c(Brand1, Brand2, Brand3)
+```
+
+(a)
+```{r}
+mean(Brand1)
+```
+
+```{r}
+var(Brand1)
+```
+
+(b)
+```{r}
+results = glm(seeds ~ factor(plots))
+summary(aov(results))
+```
+From the plot above we can see that the test statistic is 6.942 and p-value is 0.00993.
+
+(c)
+```{r}
+TukeyHSD(aov(results)) 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
